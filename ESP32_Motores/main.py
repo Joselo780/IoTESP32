@@ -3,9 +3,68 @@ import socket
 import json
 from machine import Pin
 
+# Declaración de objetos y funciones
+class VentiladorL298N:
+    def __init__(self, in1_pin, in2_pin, enable_pin):
+        self.in1 = Pin(in1_pin, Pin.OUT)
+        self.in2 = Pin(in2_pin, Pin.OUT)
+        self.enable = Pin(enable_pin, Pin.OUT)
+    
+    def girarVen(self):
+        self.enable.value(1)
+        self.in1.value(1)
+        self.in2.value(0)
+        print("Ventilador funcionando...")
+        
+    def detener(self):
+        self.in1.value(0)
+        self.in2.value(0)
+        self.enable.value(0)
+        print("Motor detenido y deshabilitado.")
+        
+class BombaAgua:
+    def __init__(self, in1_pin, in2_pin, enable_pin):
+        self.in1 = Pin(in1_pin, Pin.OUT)
+        self.in2 = Pin(in2_pin, Pin.OUT)
+        self.enable = Pin(enable_pin, Pin.OUT)
+    
+    def girarBom(self):
+        self.enable.value(1)
+        self.in1.value(1)
+        self.in2.value(0)
+        print("Bomba funcionando...")
+                
+    def detener(self):
+        self.in1.value(0)
+        self.in2.value(0)
+        self.enable.value(0)
+        print("Motor detenido y deshabilitado.")
+
+
 # Pines físicos
-pin_ventilador = Pin(15, Pin.OUT)  # Pines de conexion
-pin_bomba = Pin(4, Pin.OUT)
+ventilador = VentiladorL298N(in1_pin=25, in2_pin=26, enable_pin=27) # Pines de conexión
+bomba = BombaAgua(in1_pin=13, in2_pin=12, enable_pin=14)
+
+while True:
+    comando = input("Ingrese 'V' para girar el ventilador, 'B' para girar la bomba, o 'S' para detener y salir: ").upper()
+    
+    if comando == "V":
+        ventilador.girarVen()
+        sleep(5)
+        ventilador.detener()
+        
+    elif comando == "B":
+        bomba.girarBom()
+        sleep(10)
+        bomba.detener()
+        
+    elif comando == "S":
+        ventilador.detener()
+        bomba.detener()
+        print("Saliendo...")
+        break
+    else:
+        print("Comando no reconocido. Intente de nuevo.")
 
 # Conexión WiFi
 ssid = 'TU_SSID'
